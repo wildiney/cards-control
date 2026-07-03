@@ -23,7 +23,7 @@ export function renderDashboard(container) {
   el.innerHTML = `
     <header class="dashboard-header">
       <div class="dashboard-title">Copa do Mundo FIFA 2026</div>
-      <div class="dashboard-app-name">Minhas Figurinhas</div>
+      <div class="dashboard-app-name">Minhas <span class="highlight">Figurinhas</span></div>
     </header>
 
     <div class="dashboard">
@@ -44,18 +44,22 @@ export function renderDashboard(container) {
       <!-- Stat cards -->
       <div class="stat-cards">
         <div class="stat-card stat-card--owned">
+          <div class="stat-icon">✅</div>
           <div class="stat-value">${stats.owned}</div>
           <div class="stat-label">Tenho</div>
         </div>
         <div class="stat-card stat-card--missing">
+          <div class="stat-icon">🔍</div>
           <div class="stat-value">${stats.missing}</div>
           <div class="stat-label">Faltam</div>
         </div>
         <div class="stat-card stat-card--dupe">
+          <div class="stat-icon">🔄</div>
           <div class="stat-value">${stats.dupeCount}</div>
           <div class="stat-label">Repetidas</div>
         </div>
         <div class="stat-card stat-card--total">
+          <div class="stat-icon">📚</div>
           <div class="stat-value">${stats.total}</div>
           <div class="stat-label">Total</div>
         </div>

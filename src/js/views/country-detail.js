@@ -93,17 +93,25 @@ export function renderCountryDetail(container, code) {
   // ── Long press detection ────────────────────────────────────
   let pressTimer = null;
   let didLongPress = false;
+  let startX = 0;
+  let startY = 0;
+  const LONG_PRESS_MS = 500;
+  const MOVE_THRESHOLD = 12; // px — cancel only if finger moved significantly
 
   function onPointerDown(e) {
     didLongPress = false;
+    startX = e.clientX;
+    startY = e.clientY;
+    const card = e.currentTarget;
     pressTimer = setTimeout(() => {
-      const id = e.currentTarget.dataset.id;
+      const id = card.dataset.id;
       if (!id || !isOwned(id)) return;
       didLongPress = true;
+      if (navigator.vibrate) navigator.vibrate(40);
       const count = addDupe(id);
       showToast(`+1 repetida (${count} no total)`);
       refreshCard(id);
-    }, 500);
+    }, LONG_PRESS_MS);
   }
 
   function onPointerUp() {
@@ -111,9 +119,13 @@ export function renderCountryDetail(container, code) {
     pressTimer = null;
   }
 
-  function onPointerMove() {
-    clearTimeout(pressTimer);
-    pressTimer = null;
+  function onPointerMove(e) {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (dx * dx + dy * dy > MOVE_THRESHOLD * MOVE_THRESHOLD) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
   }
 
   function onCardClick(e) {
