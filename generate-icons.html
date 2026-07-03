@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerar Ícones PWA</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 32px; background: #f5f4f0; }
+    canvas { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .row { display: flex; gap: 32px; align-items: flex-start; margin: 24px 0; }
+    button { margin-top: 12px; padding: 8px 20px; background: #1a1a2e; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    h2 { color: #1a1a2e; margin-bottom: 4px; }
+    p { color: #6b7280; font-size: 13px; margin: 0 0 16px; }
+  </style>
+</head>
+<body>
+  <h1>Gerador de Ícones — Copa 2026</h1>
+  <p>Clique nos botões abaixo para baixar os ícones e salve-os em <code>src/icons/</code></p>
+
+  <div class="row">
+    <div>
+      <h2>512×512</h2>
+      <canvas id="c512" width="512" height="512"></canvas><br>
+      <button onclick="download('c512','icon-512.png')">Baixar icon-512.png</button>
+    </div>
+    <div>
+      <h2>192×192</h2>
+      <canvas id="c192" width="192" height="192"></canvas><br>
+      <button onclick="download('c192','icon-192.png')">Baixar icon-192.png</button>
+    </div>
+  </div>
+
+  <script>
+    function drawIcon(ctx, size) {
+      const s = size;
+      const r = s * 0.12;
+
+      // Background
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, s, s, r);
+      ctx.fill();
+
+      // Football field green circle
+      const cx = s / 2;
+      const cy = s / 2;
+      const radius = s * 0.38;
+      ctx.fillStyle = '#15803d';
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Field lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = s * 0.018;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Center circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, s * 0.12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Center dot
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, s * 0.025, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Football (pentagon pattern simplified)
+      const ballR = s * 0.13;
+      const bx = cx;
+      const by = cy;
+
+      // White ball
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(bx, by, ballR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pentagon patches on ball
+      ctx.fillStyle = '#1a1a2e';
+      const angles = [Math.PI * 0.5, Math.PI * 1.1, Math.PI * 1.7, Math.PI * 2.3, Math.PI * 2.9];
+      angles.forEach(a => {
+        const px = bx + ballR * 0.48 * Math.cos(a);
+        const py = by + ballR * 0.48 * Math.sin(a);
+        ctx.beginPath();
+        ctx.arc(px, py, ballR * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.arc(bx, by, ballR * 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Gold stars at top (3 stars)
+      ctx.fillStyle = '#C9A227';
+      const starY = s * 0.14;
+      const starSize = s * 0.055;
+      [-1, 0, 1].forEach(offset => {
+        const sx = cx + offset * s * 0.13;
+        drawStar(ctx, sx, starY, starSize * 0.4, starSize, 5);
+      });
+
+      // "2026" text at bottom
+      ctx.fillStyle = '#C9A227';
+      ctx.font = `700 ${s * 0.1}px -apple-system, system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('2026', cx, s * 0.88);
+    }
+
+    function drawStar(ctx, cx, cy, innerR, outerR, points) {
+      ctx.beginPath();
+      for (let i = 0; i < points * 2; i++) {
+        const angle = (i * Math.PI) / points - Math.PI / 2;
+        const r = i % 2 === 0 ? outerR : innerR;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
+    const c512 = document.getElementById('c512');
+    const c192 = document.getElementById('c192');
+
+    drawIcon(c512.getContext('2d'), 512);
+    drawIcon(c192.getContext('2d'), 192);
+  </script>
+</body>
+</html>
